@@ -15,7 +15,7 @@ services:
     networks:
       - google
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U macbookpro -d google_docs"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d google_docs"]
       interval: 30s
       timeout: 10s
       retries: 5
