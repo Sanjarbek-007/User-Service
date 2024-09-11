@@ -19,7 +19,12 @@ services:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
       retries: 5
-    command: ["postgres", "-c", "wal_level=replica", "-c", "max_wal_senders=3"]
+    command: [
+      "postgres", 
+      "-c", "wal_level=replica", 
+      "-c", "max_wal_senders=3", 
+      "-c", "max_replication_slots=3"
+    ]
 
   # Replica Database
   postgres-slave:
@@ -42,12 +47,12 @@ services:
       interval: 10s
       retries: 5
     command: [
-      "postgres", 
-      "-c", "hot_standby=on", 
-      "-c", "primary_conninfo=host=postgres-master port=5432 user=postgres password=1234"
+      "sh", "-c",
+      "until pg_isready -h postgres-master -p 5432 -U postgres; do sleep 1; done; \
+      pg_basebackup -h postgres-master -D /var/lib/postgresql/data -U postgres -v -P --wal-method=stream; \
+      postgres -c hot_standby=on"
     ]
 
-  # Other services remain the same
   redis:
     image: redis
     container_name: redis
