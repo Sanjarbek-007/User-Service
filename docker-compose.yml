@@ -46,11 +46,12 @@ services:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
       retries: 5
-    entrypoint: ["sh", "-c"]
-    command: >
-      until pg_isready -h postgres-master -p 5432 -U postgres; do sleep 1; done; \
+    command: [
+      "sh", "-c",
+      "until pg_isready -h postgres-master -p 5432 -U postgres; do sleep 1; done; \
       pg_basebackup -h postgres-master -D /var/lib/postgresql/data -U postgres -v -P --wal-method=stream; \
-      exec postgres -c hot_standby=on
+      postgres -c hot_standby=on"
+    ]
 
   redis:
     image: redis
@@ -59,6 +60,10 @@ services:
       - "6379:6379"
     networks:
       - google
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 5
 
   migrate:
     image: migrate/migrate
@@ -69,7 +74,7 @@ services:
     depends_on:
       postgres-master:
         condition: service_healthy
-    command: ["-path", "/migrations", "-database", "postgres://postgres:1234@postgres-master:5432/google_docs?sslmode=disable", "up"]
+    command: ["-path", "./migrations", "-database", "postgres://postgres:1234@postgres-master:5432/google_docs?sslmode=disable", "up"]
 
   userservice:
     container_name: user
@@ -78,7 +83,7 @@ services:
       - "1234:1234"
       - "2345:2345"
     networks:
-      - google
+     - google
     depends_on:
       postgres-master:
         condition: service_healthy
