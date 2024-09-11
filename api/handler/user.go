@@ -374,7 +374,7 @@ func (h Handler) UploadMedia(c *gin.Context) {
 
 	newFile := uuid.NewString() + fileExt
 
-	minioClient, err := minio.New("3.65.0.245:9000", &minio.Options{
+	minioClient, err := minio.New("3.75.208.130:9000", &minio.Options{
 		Creds:  credentials.NewStaticV4("minio", "minioadmin", ""),
 		Secure: false,
 	})
@@ -457,7 +457,7 @@ func (h Handler) UploadMedia(c *gin.Context) {
 		return
 	}
 
-	maduUrl := fmt.Sprintf("http://3.65.0.245:9000/photos/%s", newFile)
+	maduUrl := fmt.Sprintf("http://3.75.208.130:9000/photos/%s", newFile)
 
 	c.JSON(201, gin.H{
 		"obj":     objUrl.String(),
