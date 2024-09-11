@@ -14,6 +14,11 @@ services:
       - db:/data/postgres
     networks:
       - google
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U macbookpro -d google_docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   redis:
     image: redis
@@ -72,6 +77,8 @@ services:
 
 networks:
   google:
+    external: true
+    driver: bridge
 
 volumes:
   db:
