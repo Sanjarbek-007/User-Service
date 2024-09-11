@@ -248,3 +248,30 @@ func (u *UserRepository) ProfileImage(ctx context.Context, req *pb.ImageReq) (*p
 	}, nil
 }
 
+func (u *UserRepository) GetAllUsers(ctx context.Context, req *pb.GetAllUsersReq) (*pb.GetAllUsersRes, error) {
+	query := `
+		SELECT id, email, first_name, last_name, role FROM users
+		LIMIT $1 OFFSET $2`
+
+	rows, err := u.Db.QueryContext(ctx, query, req.Limit, req.Offset)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query: %v", err)
+	}
+	defer rows.Close()
+
+	var users []*pb.Users
+	for rows.Next() {
+		var user pb.Users
+		if err := rows.Scan(&user.Id, &user.Email, &user.FirstName, &user.LastName, &user.Role); err != nil {
+			return nil, fmt.Errorf("failed to scan user row: %v", err)
+		}
+		users = append(users, &user)
+	}
+
+	// Check for errors in rows iteration
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %v", err)
+	}
+
+	return &pb.GetAllUsersRes{User: users}, nil
+}

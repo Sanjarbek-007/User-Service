@@ -116,4 +116,11 @@ func (s *UserService) ProfileImage(ctx context.Context,req *pb.ImageReq)(*pb.Ima
 	return res, nil
 }
 
-func (s *UserService) Getall(ctx context.Context, req *pb.)
+func (s *UserService) Getall(ctx context.Context, req *pb.GetAllUsersReq) (*pb.GetAllUsersRes, error) {
+	res, err := s.User.User().GetAllUsers(ctx, req)
+	if err != nil {
+		s.Logger.Error("failed to Getall users", "error", err)
+		return res, nil
+	}
+	return res, nil
+}

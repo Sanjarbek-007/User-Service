@@ -549,3 +549,59 @@ func (h Handler) DeleteUser(c *gin.Context) {
 
 	c.JSON(200, res)
 }
+
+// @Summary      get all users
+// @Description  This endpoint gets all users informations.
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        limit  path      string  true  "limit"
+// @Param        offset path     string  true  "offset"
+// @Success      200    {object}  user.GetUserResponse
+// @Failure      400    {object}  string
+// @Failure      500    {object}  string
+// @Router       /auth/GetuserByEmail/{limit}/{offset} [get]
+func (h Handler) GetAllUsers(c *gin.Context) {
+	limitStr := c.Param("limit")
+	OffsetStr := c.Param("offset")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid offset: %s", OffsetStr)})
+		return
+	}
+
+	offset, err := strconv.Atoi(OffsetStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid offset: %s", OffsetStr)})
+		return
+	}
+
+	req := pb.GetAllUsersReq{
+		Limit: int32(limit),
+		Offset: int32(offset),
+	}
+
+	res, err := h.User.GetallUsers(c, &req)
+	if err != nil {
+		h.Log.Error("erorr while searich getall users", "error", err.Error())
+		c.AbortWithStatusJSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, res)
+}
+
+// @Summary      Health check
+// @Description  This endpoint checks if the server is healthy.
+// @Tags         health
+// @Accept       json
+// @Produce      json
+// @Success      200    {object}  string  "OK"
+// @Router       /auth/health [get]
+func (h Handler) HealthCheck(c *gin.Context) {
+    c.JSON(http.StatusOK, gin.H{"status": "OK"})
+}
+

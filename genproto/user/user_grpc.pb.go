@@ -31,6 +31,7 @@ const (
 	UserService_UpdateRole_FullMethodName           = "/user.UserService/UpdateRole"
 	UserService_ProfileImage_FullMethodName         = "/user.UserService/ProfileImage"
 	UserService_StoreRefreshToken_FullMethodName    = "/user.UserService/StoreRefreshToken"
+	UserService_GetallUsers_FullMethodName          = "/user.UserService/GetallUsers"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -49,6 +50,7 @@ type UserServiceClient interface {
 	UpdateRole(ctx context.Context, in *UpdateRoleReq, opts ...grpc.CallOption) (*UpdateRoleRes, error)
 	ProfileImage(ctx context.Context, in *ImageReq, opts ...grpc.CallOption) (*ImageRes, error)
 	StoreRefreshToken(ctx context.Context, in *StoreRefreshTokenReq, opts ...grpc.CallOption) (*StoreRefReshTokenRes, error)
+	GetallUsers(ctx context.Context, in *GetAllUsersReq, opts ...grpc.CallOption) (*GetAllUsersRes, error)
 }
 
 type userServiceClient struct {
@@ -179,6 +181,16 @@ func (c *userServiceClient) StoreRefreshToken(ctx context.Context, in *StoreRefr
 	return out, nil
 }
 
+func (c *userServiceClient) GetallUsers(ctx context.Context, in *GetAllUsersReq, opts ...grpc.CallOption) (*GetAllUsersRes, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAllUsersRes)
+	err := c.cc.Invoke(ctx, UserService_GetallUsers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -195,6 +207,7 @@ type UserServiceServer interface {
 	UpdateRole(context.Context, *UpdateRoleReq) (*UpdateRoleRes, error)
 	ProfileImage(context.Context, *ImageReq) (*ImageRes, error)
 	StoreRefreshToken(context.Context, *StoreRefreshTokenReq) (*StoreRefReshTokenRes, error)
+	GetallUsers(context.Context, *GetAllUsersReq) (*GetAllUsersRes, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -237,6 +250,9 @@ func (UnimplementedUserServiceServer) ProfileImage(context.Context, *ImageReq) (
 }
 func (UnimplementedUserServiceServer) StoreRefreshToken(context.Context, *StoreRefreshTokenReq) (*StoreRefReshTokenRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StoreRefreshToken not implemented")
+}
+func (UnimplementedUserServiceServer) GetallUsers(context.Context, *GetAllUsersReq) (*GetAllUsersRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetallUsers not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -467,6 +483,24 @@ func _UserService_StoreRefreshToken_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetallUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllUsersReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetallUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetallUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetallUsers(ctx, req.(*GetAllUsersReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -521,6 +555,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StoreRefreshToken",
 			Handler:    _UserService_StoreRefreshToken_Handler,
+		},
+		{
+			MethodName: "GetallUsers",
+			Handler:    _UserService_GetallUsers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
