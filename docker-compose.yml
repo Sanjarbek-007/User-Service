@@ -15,9 +15,8 @@ services:
     networks:
       - google
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d google_docs"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
       retries: 5
 
   redis:
@@ -37,7 +36,7 @@ services:
     depends_on:
       postgres-db:
         condition: service_healthy
-    command: ["-path", "/migrations", "-database", "postgres://postgres:1234@postgres-db:5432/google_docs?sslmode=disable", "up"]
+    command: ["-path", "./migrations", "-database", "postgres://postgres:1234@postgres:5432/google_docs?sslmode=disable", "up"]
 
   userservice:
     container_name: user
