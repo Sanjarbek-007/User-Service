@@ -14,6 +14,11 @@ services:
       - db:/data/postgres
     networks:
       - google
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d google_docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   redis:
     image: redis
@@ -32,7 +37,7 @@ services:
     depends_on:
       postgres-db:
         condition: service_healthy
-    command: ["-path", "./migrations", "-database", "postgres://postgres:1234@postgres:5432/google_docs?sslmode=disable", "up"]
+    command: ["-path", "/migrations", "-database", "postgres://postgres:1234@postgres-db:5432/google_docs?sslmode=disable", "up"]
 
   userservice:
     container_name: user
@@ -63,7 +68,7 @@ services:
       - MINIO_ROOT_PASSWORD=minioadmin
       - MINIO_DEFAULT_BUCKETS=photos
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://3.75.208.130:9000/minio/health/live || exit 1" ]
+      test: [ "CMD-SHELL", "curl -f http://localhost:9000/minio/health/live || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 5
