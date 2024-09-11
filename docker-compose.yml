@@ -13,6 +13,7 @@ services:
       - "5433:5432"
     volumes:
       - master-db:/var/lib/postgresql/data
+      - ./master-pg_hba.conf:/usr/share/postgresql/postgresql.conf.sample
     networks:
       - google
     healthcheck:
@@ -40,6 +41,7 @@ services:
       - postgres-master
     volumes:
       - slave-db:/var/lib/postgresql/data
+      - ./slave-pg_hba.conf:/usr/share/postgresql/postgresql.conf.sample
     networks:
       - google
     healthcheck:
