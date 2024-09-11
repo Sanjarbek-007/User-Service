@@ -1,7 +1,10 @@
+version: '3.8'
+
 services:
-  postgres-db:
-    container_name: postgres
+  # Master Database
+  postgres-master:
     image: postgres
+    container_name: postgres-master
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=1234
@@ -9,14 +12,42 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - db:/data/postgres
+      - master-db:/var/lib/postgresql/data
     networks:
       - google
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
       retries: 5
+    command: ["postgres", "-c", "wal_level=replica", "-c", "max_wal_senders=3"]
 
+  # Replica Database
+  postgres-slave:
+    image: postgres
+    container_name: postgres-slave
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=google_docs
+    ports:
+      - "5434:5432"
+    depends_on:
+      - postgres-master
+    volumes:
+      - slave-db:/var/lib/postgresql/data
+    networks:
+      - google
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      retries: 5
+    command: [
+      "postgres", 
+      "-c", "hot_standby=on", 
+      "-c", "primary_conninfo=host=postgres-master port=5432 user=postgres password=1234"
+    ]
+
+  # Other services remain the same
   redis:
     image: redis
     container_name: redis
@@ -24,11 +55,7 @@ services:
       - "6379:6379"
     networks:
       - google
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      retries: 5
-    
+
   migrate:
     image: migrate/migrate
     networks:
@@ -36,9 +63,9 @@ services:
     volumes:
       - ./migrations:/migrations
     depends_on:
-      postgres-db:
+      postgres-master:
         condition: service_healthy
-    command: ["-path", "./migrations", "-database", "postgres://postgres:1234@postgres:5432/google_docs?sslmode=disable", "up"]
+    command: ["-path", "./migrations", "-database", "postgres://postgres:1234@postgres-master:5432/google_docs?sslmode=disable", "up"]
 
   userservice:
     container_name: user
@@ -49,36 +76,14 @@ services:
     networks:
      - google
     depends_on:
-      postgres-db:
+      postgres-master:
         condition: service_healthy
-      migrate:
-        condition: service_started
       redis:
         condition: service_healthy
-
-  minio:
-    container_name: minio
-    image: docker.io/bitnami/minio:2024
-    ports:
-      - '9000:9000'
-      - '9001:9001'
-    volumes:
-      - 'minio_data:/data'
-    environment:
-      - MINIO_ROOT_USER=minio
-      - MINIO_ROOT_PASSWORD=minioadmin
-      - MINIO_DEFAULT_BUCKETS=photos
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://3.75.208.130:9000/minio/health/live || exit 1" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-      - google
 
 networks:
   google:
 
 volumes:
-  db:
-  minio_data:
+  master-db:
+  slave-db:
