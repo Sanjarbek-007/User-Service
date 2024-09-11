@@ -25,6 +25,7 @@ WORKDIR /app
 
 # Copy the compiled Go binary and environment file from the builder stage
 COPY --from=builder /app/myapp .
+# Copy the .env file if needed (comment this out if not used)
 COPY --from=builder /app/.env .
 
 # Copy the email template
