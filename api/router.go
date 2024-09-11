@@ -34,6 +34,7 @@ func NewRouter(h *handler.Handler) *gin.Engine {
 		user.PUT("/update_role/:email/:role",h.UpdateRole)
 		user.POST("/products/media/:email",h.UploadMedia)
 		user.PUT("/update_password/:email/:old_password/:new_password",h.UpdatePassword)
+		user.GET("/health", h.HealthCheck)
 	}
 	return router
 }

@@ -30,6 +30,23 @@ definitions:
       message:
         type: string
     type: object
+  user.DeleteUserr:
+    properties:
+      message:
+        type: string
+    type: object
+  user.GetAllUsersRes:
+    properties:
+      user:
+        items:
+          $ref: '#/definitions/user.Users'
+        type: array
+    type: object
+  user.GetUserResponse:
+    properties:
+      user:
+        $ref: '#/definitions/user.User'
+    type: object
   user.LoginReq:
     properties:
       email:
@@ -57,6 +74,11 @@ definitions:
       message:
         type: string
     type: object
+  user.UpdateUserRespose:
+    properties:
+      message:
+        type: string
+    type: object
   user.User:
     properties:
       created_at:
@@ -76,6 +98,19 @@ definitions:
       updated_at:
         type: string
     type: object
+  user.Users:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      role:
+        type: string
+    type: object
 info:
   contact:
     email: support@swagger.io
@@ -85,6 +120,138 @@ info:
   title: Google_docs_user API
   version: "1.0"
 paths:
+  /auth/DeleteUser/{user_id}:
+    delete:
+      consumes:
+      - application/json
+      description: This endpoint deletes the user's profile.
+      parameters:
+      - description: User Email
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.DeleteUserr'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Delete user
+      tags:
+      - auth
+  /auth/GetuserByEmail/{email}:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint gets user's information with his email.
+      parameters:
+      - description: User Email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.GetUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: get user by Email
+      tags:
+      - auth
+  /auth/GetuserByEmail/{limit}/{offset}:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint gets all users informations.
+      parameters:
+      - description: limit
+        in: path
+        name: limit
+        required: true
+        type: string
+      - description: offset
+        in: path
+        name: offset
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.GetAllUsersRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: get all users
+      tags:
+      - auth
+  /auth/UpdateUser/{email}/{firstname}/{lastname}:
+    put:
+      consumes:
+      - application/json
+      description: This endpoint updates the user based on the provided email and
+        new role.
+      parameters:
+      - description: User Email
+        in: path
+        name: email
+        required: true
+        type: string
+      - description: Firstname
+        in: path
+        name: firstname
+        required: true
+        type: string
+      - description: New Lastname
+        in: path
+        name: lastname
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UpdateUserRespose'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Update user role
+      tags:
+      - auth
   /auth/confirm/{email}/{code}:
     get:
       consumes:
@@ -151,6 +318,21 @@ paths:
       summary: Confirm new password
       tags:
       - auth
+  /auth/health:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint checks if the server is healthy.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Health check
+      tags:
+      - health
   /auth/login:
     post:
       consumes:

@@ -500,7 +500,7 @@ func (h Handler) GetUSerByEmail(c *gin.Context) {
 // @Param        email  path      string  true  "User Email"
 // @Param        firstname   path      string  true  "Firstname"
 // @Param        lastname   path      string  true  "New Lastname"
-// @Success      200    {object}  user.UpdateUser
+// @Success      200    {object}  user.UpdateUserRespose
 // @Failure      400    {object}  string
 // @Failure      500    {object}  string
 // @Router       /auth/UpdateUser/{email}/{firstname}/{lastname} [put]
@@ -529,7 +529,7 @@ func (h Handler) UpdateUser(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        user_id  path      string  true  "User Email"
-// @Success      200    {object}  user.DeleteUser
+// @Success      200    {object}  user.DeleteUserr
 // @Failure      400    {object}  string
 // @Failure      500    {object}  string
 // @Router       /auth/DeleteUser/{user_id} [delete]
@@ -557,7 +557,7 @@ func (h Handler) DeleteUser(c *gin.Context) {
 // @Produce      json
 // @Param        limit  path      string  true  "limit"
 // @Param        offset path     string  true  "offset"
-// @Success      200    {object}  user.GetUserResponse
+// @Success      200    {object}  user.GetAllUsersRes
 // @Failure      400    {object}  string
 // @Failure      500    {object}  string
 // @Router       /auth/GetuserByEmail/{limit}/{offset} [get]
@@ -578,7 +578,7 @@ func (h Handler) GetAllUsers(c *gin.Context) {
 	}
 
 	req := pb.GetAllUsersReq{
-		Limit: int32(limit),
+		Limit:  int32(limit),
 		Offset: int32(offset),
 	}
 
@@ -602,6 +602,5 @@ func (h Handler) GetAllUsers(c *gin.Context) {
 // @Success      200    {object}  string  "OK"
 // @Router       /auth/health [get]
 func (h Handler) HealthCheck(c *gin.Context) {
-    c.JSON(http.StatusOK, gin.H{"status": "OK"})
+	c.JSON(http.StatusOK, gin.H{"status": "OK"})
 }
-
