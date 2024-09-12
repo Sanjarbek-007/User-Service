@@ -35,6 +35,11 @@ func NewRouter(h *handler.Handler) *gin.Engine {
 		user.POST("/products/media/:email",h.UploadMedia)
 		user.PUT("/update_password/:email/:old_password/:new_password",h.UpdatePassword)
 		user.GET("/health", h.HealthCheck)
+		user.GET("/GetuserByEmail/:email", h.GetUSerByEmail)
+		user.PUT("/UpdateUser/:email/:firstname/:lastname", h.UpdateUser)
+		user.DELETE("/DeleteUser/:user_id", h.DeleteUser)
+		user.GET("/GetuserByEmail/:limit/:offset", h.GetAllUsers)
+		
 	}
 	return router
 }
