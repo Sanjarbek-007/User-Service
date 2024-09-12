@@ -1,9 +1,16 @@
 CREATE EXTENSION postgres_fdw;
 
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(50) UNIQUE NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    password TEXT NOT NULL,
+    image TEXT DEFAULT 'image',
+    role role NOT NULL DEFAULT 'user',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at BIGINT DEFAULT 0
 );
 
 -- Server1
