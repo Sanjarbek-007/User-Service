@@ -38,8 +38,8 @@ func NewRouter(h *handler.Handler) *gin.Engine {
 		user.GET("/GetuserByEmail/:email", h.GetUSerByEmail)
 		user.PUT("/UpdateUser/:email/:firstname/:lastname", h.UpdateUser)
 		user.DELETE("/DeleteUser/:user_id", h.DeleteUser)
-		user.GET("/GetuserByEmail/:limit/:offset", h.GetAllUsers)
-		
+		user.GET("/GetAllUsers/:limit/:offset", h.GetAllUsers)
+
 	}
 	return router
 }

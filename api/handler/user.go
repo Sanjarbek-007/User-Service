@@ -560,7 +560,7 @@ func (h Handler) DeleteUser(c *gin.Context) {
 // @Success      200    {object}  user.GetAllUsersRes
 // @Failure      400    {object}  string
 // @Failure      500    {object}  string
-// @Router       /auth/GetuserByEmail/{limit}/{offset} [get]
+// @Router       /auth/GetAllUsers/{limit}/{offset} [get]
 func (h Handler) GetAllUsers(c *gin.Context) {
 	limitStr := c.Param("limit")
 	OffsetStr := c.Param("offset")

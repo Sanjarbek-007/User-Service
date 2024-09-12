@@ -149,36 +149,7 @@ paths:
       summary: Delete user
       tags:
       - auth
-  /auth/GetuserByEmail/{email}:
-    get:
-      consumes:
-      - application/json
-      description: This endpoint gets user's information with his email.
-      parameters:
-      - description: User Email
-        in: path
-        name: email
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/user.GetUserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: get user by Email
-      tags:
-      - auth
-  /auth/GetuserByEmail/{limit}/{offset}:
+  /auth/GetAllUsers/{limit}/{offset}:
     get:
       consumes:
       - application/json
@@ -210,6 +181,35 @@ paths:
           schema:
             type: string
       summary: get all users
+      tags:
+      - auth
+  /auth/GetuserByEmail/{email}:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint gets user's information with his email.
+      parameters:
+      - description: User Email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.GetUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: get user by Email
       tags:
       - auth
   /auth/UpdateUser/{email}/{firstname}/{lastname}:
