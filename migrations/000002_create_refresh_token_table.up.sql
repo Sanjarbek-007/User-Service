@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS users(
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
+
+CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(50) UNIQUE NOT NULL,
     first_name VARCHAR(50) NOT NULL,
@@ -10,8 +12,6 @@ CREATE TABLE IF NOT EXISTS users(
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     deleted_at BIGINT DEFAULT 0
 );
-
-CREATE EXTENSION IF NOT EXISTS postgres_fdw;
 
 -- Server1
 CREATE SERVER server1_fdw FOREIGN DATA WRAPPER postgres_fdw OPTIONS (host '3.75.208.130', port '5432', dbname 'google_docs');
