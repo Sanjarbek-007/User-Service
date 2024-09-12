@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS users(
     deleted_at BIGINT DEFAULT 0
 );
 
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
+
 -- Server1
 CREATE SERVER server1_fdw FOREIGN DATA WRAPPER postgres_fdw OPTIONS (host '3.75.208.130', port '5432', dbname 'google_docs');
 CREATE USER MAPPING FOR postgres SERVER server1_fdw OPTIONS (user 'postgres', password '1234');
