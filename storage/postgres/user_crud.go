@@ -83,7 +83,7 @@ func (u *UserRepository) GetUserByEmail(ctx context.Context, req *pb.GetUSerByEm
 
 	query := `SELECT id, email, first_name, last_name, password, role, created_at, updated_at FROM users WHERE email = $1 and deleted_at = 0
 	UNION ALL
-	SELECT id, email, first_name, last_name, password, role, created_at, updated_at FROM users_server1 WHERE email = $1 and deleted_at = 0`
+	SELECT id, email, first_name, last_name, password, role, created_at, updated_at FROM users_server2 WHERE email = $1 and deleted_at = 0`
 
 	err := u.Db.QueryRow(query, req.Email).Scan(&user.Id, &user.Email, &user.FirstName, &user.LastName, &user.Password, &user.Role, &createdAt, &updatedAt)
 	if err == sql.ErrNoRows {
@@ -105,7 +105,7 @@ func (u *UserRepository) GetUserByEmail(ctx context.Context, req *pb.GetUSerByEm
 func (u *UserRepository) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordReq) (*pb.UpdatePasswordRes, error) {
 
 	query := `UPDATE users SET password = $1 WHERE email = $2 AND deleted_at = 0;
-	UPDATE users_server1 SET password = $1 WHERE email = $2 AND deleted_at = 0;`
+	UPDATE users_server2 SET password = $1 WHERE email = $2 AND deleted_at = 0;`
 
 	result, err := u.Db.ExecContext(ctx, query, req.NewPassword, req.Email)
 	if err != nil {
@@ -132,7 +132,7 @@ func (u *UserRepository) UpdatePassword(ctx context.Context, req *pb.UpdatePassw
 func (u *UserRepository) ConfirmationPassword(ctx context.Context, req *pb.ConfirmationReq) (*pb.ConfirmationResponse, error) {
 
 	query := `UPDATE users SET password = $1 WHERE email = $2 AND deleted_at = 0;
-	UPDATE users_server1 SET password = $1 WHERE email = $2 AND deleted_at = 0;
+	UPDATE users_server2 SET password = $1 WHERE email = $2 AND deleted_at = 0;
 	`
 	_,err := u.Db.ExecContext(ctx,query, req.NewPassword, req.Email)
 	if err != nil {
@@ -154,7 +154,7 @@ func (u *UserRepository) UpdateUser(ctx context.Context, req *pb.UpdateUserReque
 
 	query := `SELECT email, first_name, last_name FROM users WHERE id = $1 AND deleted_at = 0
 	UNION ALL
-	SELECT email, first_name, last_name FROM users_server1 WHERE id = $1 AND deleted_at = 0`
+	SELECT email, first_name, last_name FROM users_server2 WHERE id = $1 AND deleted_at = 0`
 	err := u.Db.QueryRowContext(ctx, query, req.Id).Scan(&existingUser.Email, &existingUser.FirstName, &existingUser.LastName)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -176,7 +176,7 @@ func (u *UserRepository) UpdateUser(ctx context.Context, req *pb.UpdateUserReque
 	}
 
 	updateQuery := `UPDATE users SET email = $1, first_name = $2, last_name = $3, updated_at = $4 WHERE id = $5 AND deleted_at = 0;
-	UPDATE users_server1 SET email = $1, first_name = $2, last_name = $3, updated_at = $4 WHERE id = $5 AND deleted_at = 0;`
+	UPDATE users_server2 SET email = $1, first_name = $2, last_name = $3, updated_at = $4 WHERE id = $5 AND deleted_at = 0;`
 	_, err = u.Db.ExecContext(ctx, updateQuery, req.Email, req.FirstName, req.LastName, time.Now(), req.Id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update user: %v", err)
@@ -191,7 +191,7 @@ func (u *UserRepository) UpdateUser(ctx context.Context, req *pb.UpdateUserReque
 
 func (u *UserRepository) DeleteUser(ctx context.Context, req *pb.UserId) (*pb.DeleteUserr, error) {
 	query := `UPDATE users SET deleted_at = $1 WHERE id = $2 AND deleted_at = 0;
-	UPDATE users_server1 SET deleted_at = $1 WHERE id = $2 AND deleted_at = 0;`
+	UPDATE users_server2 SET deleted_at = $1 WHERE id = $2 AND deleted_at = 0;`
 	res, err := u.Db.ExecContext(ctx, query, time.Now(), req.Id)
 	if err != nil {
 		u.Log.Error("Error deleting ", "user", err)
@@ -216,7 +216,7 @@ func (u *UserRepository) DeleteUser(ctx context.Context, req *pb.UserId) (*pb.De
 
 func (u *UserRepository) UpdateRole(ctx context.Context, req *pb.UpdateRoleReq) (*pb.UpdateRoleRes, error) {
 	query := `UPDATE users SET role = $1 WHERE email = $2 AND deleted_at = 0;
-	UPDATE users_server1 SET role = $1 WHERE email = $2 AND deleted_at = 0;`
+	UPDATE users_server2 SET role = $1 WHERE email = $2 AND deleted_at = 0;`
 	res, err := u.Db.ExecContext(ctx, query, req.Role, req.Email)
 	if err != nil {
 		u.Log.Error("Error updating role ", "err", err)
@@ -245,7 +245,7 @@ func (u *UserRepository) ProfileImage(ctx context.Context, req *pb.ImageReq) (*p
 		SET image = $1,
 		    updated_at = CURRENT_TIMESTAMP
 		WHERE email = $2 AND deleted_at = 0;
-		UPDATE users_server1
+		UPDATE users_server2
 		SET image = $1,
 		    updated_at = CURRENT_TIMESTAMP
 		WHERE email = $2 AND deleted_at = 0;
@@ -268,7 +268,7 @@ func (u *UserRepository) GetAllUsers(ctx context.Context, req *pb.GetAllUsersReq
 		SELECT id, email, first_name, last_name, role FROM users
 		LIMIT $1 OFFSET $2
 		UNION ALL
-		SELECT id, email, first_name, last_name, role FROM users_server1
+		SELECT id, email, first_name, last_name, role FROM users_server2
 		LIMIT $1 OFFSET $2`
 
 	rows, err := u.Db.QueryContext(ctx, query, req.Limit, req.Offset)
